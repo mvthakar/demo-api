@@ -1,14 +1,14 @@
-GET http://localhost:3000/
+GET https://demo-api-nh17.onrender.com/
 
 ###
 
-POST http://localhost:3000/product
+POST https://demo-api-nh17.onrender.com/product
 Content-Type: application/json
 {
-    "name": "Mno",
+    "name": "Xyz",
     "price": 500
 }
 
 ###
 
-GET http://localhost:3000/products
+GET https://demo-api-nh17.onrender.com/products

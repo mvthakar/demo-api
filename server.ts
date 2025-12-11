@@ -1,21 +1,15 @@
 import Database from 'better-sqlite3';
 import cors from 'cors';
 import express from 'express';
+import path from 'node:path';
 
 import type {Request, Response} from "express";
-
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const db = new Database("db.sqlite");
 db.prepare("CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, price INTEGER)").run();
-
-app.get("/", (req: Request, res: Response) => {
-    return res.json({
-        message: "Hello, World!"
-    });
-});
 
 app.post("/product", (req: Request, res: Response) => {
     const name = req.body.name;
@@ -32,6 +26,10 @@ app.get("/products", (req: Request, res: Response) => {
     const products = db.prepare(query).all();
 
     return res.json(products);
+});
+
+app.use((req: Request, res: Response) => {
+    res.sendFile(path.resolve("index.html"));
 });
 
 app.listen(3000, () => {
