@@ -1,11 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
+
 <body>
-    <h1>Hello World</h1>
+  <h3>Add Product</h3>
+  <form onsubmit="addProduct(event)">
+    <input type="text" id="name" placeholder="Name">
+    <br><br>
+    <input type="number" id="price" placeholder="Price">
+    <br><br>
+    <button type="submit">Add</button>
+  </form>
+  <br>
+  <h3>Product List</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+  <script>
+
+    async function addProduct(event)
+    {
+      event.preventDefault();
+      
+      const name = document.getElementById("name");
+      const price = document.getElementById("price");
+
+      if (name.value === "" || price.value === "")
+      {
+        alert("Please fill in all fields");
+        return;
+      }
+
+      if (isNaN(price.value) || parseInt(price.value) < 0)
+      {
+        alert("Price must be a number");
+        return;
+      }
+
+      const response = await fetch("/product", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: name.value,
+          price: price.value
+        })
+      });
+
+      if (response.status !== 200) {
+        alert("Cloud not add product");
+        return;
+      }
+
+      await fetchProductList();
+
+      name.value = "";
+      price.value = "";
+    }
+
+    async function fetchProductList()
+    {
+      const tbody = document.querySelector("tbody");
+
+      tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align: center;">
+                        Loading...
+                    </td>
+                </tr>
+            `;
+      const response = await fetch("/products");
+      const products = await response.json();
+
+      tbody.innerHTML = "";
+
+      for (const product of products)
+      {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    fetchProductList();
+
+  </script>
 </body>
+
 </html>
